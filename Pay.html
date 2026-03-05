@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary: #0d6efd;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark-color: #212529;
+             --accent-color: #0787ff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-section, .info-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+        }
+        
+        .section-title {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .card-number-container {
+            position: relative;
+        }
+        
+        .card-icons {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .card-icon {
+            width: 30px;
+            height: 20px;
+            background-color: #eee;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #777;
+        }
+        
+        .card-icon.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            color: rgb(255, 255, 255);
+        }
+        
+        .btn-primary:hover {
+            background-color: #03c931;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #ff0000;
+        }
+        
+        .info-box {
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .info-box h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info-box p {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .terms-section {
+            margin-top: 20px;
+        }
+        
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .terms-checkbox input {
+            width: auto;
+            margin-top: 5px;
+        }
+        
+        .terms-checkbox label {
+            font-weight: normal;
+        }
+        
+        .terms-checkbox a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+        
+        .success-message {
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error-message {
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .form-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .card-preview .card-number {
+            font-size: 22px;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        
+        .card-preview .card-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .card-preview .card-holder {
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <img src="Hotel-logo-new.png" style="width: 100px; height: 90px; margin-left: 690px;">
+    <div class="container">
+        
+        <div class="form-section">
+            <h1 class="section-title"><i class="fas fa-credit-card"></i> Payment Information</h1>
+            
+            <div class="form-tabs">
+                <div class="tab active" data-tab="personal">Personal Details</div>
+                <div class="tab" data-tab="payment">Payment Details</div>
+            </div>
+            
+            <form id="paymentForm" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="8ed81710-19f3-4b1b-89bf-f3c36ab3ff40">
+                <input type="hidden" name="subject" value="New Payment Form Submission">
+                <input type="hidden" name="from_name" value="Payment Form">
+                <input type="checkbox" name="botcheck" style="display: none;">
+                
+                <div class="tab-content active" id="personal-tab">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required placeholder="Alex imanga">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="Xander1@mail.com">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="service">Service</label>
+                            <select id="service" name="service" required>
+                                <option value="">Select</option>
+                                <option value="Accommodation">Accommodation</option>
+                                <option value="Conferencing">Conferencing</option>
+                                <option value="Event & Function">Event & Functions</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="city">Country</label>
+                            <input type="text" id="country" name="country" required placeholder="Country">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="Hotel Unity">Hotel Unit</label>
+                            <select id="Hotel Unity" name="Hotel Unity" required>
+                                <option value="">Select</option>
+                                <option value="Kabulonga">Kabulonga</option>
+                                <option value="Convention Center">Convention Center</option>
+                                <option value="Jesmondine">Jesmondine</option>
+                                <option value="chamba-valley">chamba-valley</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="city">Booking Code</label>
+                            <input type="text" id="Booking Code" name="Booking Code" required placeholder="Booking Code">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postalCode">Postal Code</label>
+                            <input type="text" id="postalCode" name="postalCode" required placeholder="10001">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+260 971070411">
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" id="cancelPersonal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextToPayment">
+                            <i class="fas fa-arrow-right"></i> Continue to Pre-Payment
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="payment-tab">
+                    <div class="card-preview">
+                        <div class="card-type">VISA</div>
+                        <div class="card-number" id="cardPreview">#### #### #### ####</div>
+                        <div class="card-details">
+                            <div class="bank-name" id="namePreview">BANK NAME</div>
+                            <div class="card-expiry" id="expiryPreview">MM/YY</div>
+                        </div>
+                    </div>
+                    <h4 style="font-size: large;">Pay with</h4>
+                <img src="logo cards.png" style="width: 215px; height: 60px;margin-bottom: 25px;">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <div class="card-number-container">
+                            <input type="text" id="cardNumber" name="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19">
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cardName">Name on Card</label>
+                        <input type="text" id="cardName" name="cardName" required placeholder="FNB">
+                    </div>
+                    
+                    <div class="card-details">
+                        <div class="form-group">
+                            <label for="expiryDate">Expiry Date</label>
+                            <input type="text" id="expiryDate" name="expiryDate" required placeholder="MM/YY" maxlength="5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" name="cvv" required placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    
+                    <div class="terms-section">
+                        <div class="terms-checkbox">
+                            <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                            <label for="agreeTerms">I agree to the <a href="#">Terms and Conditions</a> and have read the <a href="#">Privacy Policy</a></label>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" id="backToPersonal">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-lock"></i> Complete Payment
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Your payment has been processed successfully!
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-circle"></i> There was an error processing your payment. Please try again.
+                </div>
+            </form>
+        </div>
+        
+        <div class="info-section">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> Important Information</h2>
+            
+            <div class="info-box">
+                <h3>1. Deposit and Cancellation Policy</h3>
+                <p>A deposit of 50% is required to secure your reservation. Cancellations made more than 48 hours before check-in will receive a full refund. Cancellations within 48 hours will forfeit the deposit.</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>2. Description of Taxes and Additional Charges</h3>
+                <p>All rates are subject to 10% VAT and 5% city tax. Additional charges may apply for extra services such as airport transfers, spa treatments, or special dining requests.</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>3. Other Charges That May Apply</h3>
+                <p>Incidental charges including minibar, room service, and damages will be billed separately. A security deposit of $100 may be held on your card during your stay.</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>4. Payment Policies</h3>
+                <p>We accept Visa, MasterCard, and American Express. All payments are processed securely. Your card will be charged immediately for the deposit amount.</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>5. Pet Policy</h3>
+                <p>Pets are welcome in designated rooms for an additional fee of $25 per night. Please inform us in advance if you plan to bring a pet.</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>6. Disclaimers</h3>
+                <p>We are not responsible for lost or stolen items. Check-in is at 3:00 PM and check-out is at 11:00 AM. Early check-in and late check-out are subject to availability and additional charges.</p>
+            </div>
+            
+            <div class="terms-section">
+                <h3 class="section-title"><i class="fas fa-file-contract"></i> Terms and Conditions</h3>
+                <div class="info-box">
+                    <p>By completing this booking, you agree to our terms and conditions. The hotel reserves the right to refuse service to anyone. We may pre-authorize your credit card prior to arrival. In case of no-show, the full amount of the reservation will be charged. Special requests are subject to availability and cannot be guaranteed. The hotel is not responsible for any third-party services booked through our website.</p>
+                    <p>For any disputes, the laws of the country where the hotel is located will apply. We reserve the right to modify these terms at any time without prior notice.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to current tab and content
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Next and Back buttons
+            document.getElementById('nextToPayment').addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="payment"]').classList.add('active');
+                document.getElementById('payment-tab').classList.add('active');
+            });
+            
+            document.getElementById('backToPersonal').addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="personal"]').classList.add('active');
+                document.getElementById('personal-tab').classList.add('active');
+            });
+            
+            // Cancel button
+            document.getElementById('cancelPersonal').addEventListener('click', () => {
+                if (confirm('Are you sure you want to cancel? All entered data will be lost.')) {
+                    document.getElementById('paymentForm').reset();
+                    updateCardPreview();
+                }
+            });
+            
+            // Card number formatting
+            const cardNumberInput = document.getElementById('cardNumber');
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ');
+                
+                if (formattedValue) {
+                    e.target.value = formattedValue;
+                }
+                
+                updateCardPreview();
+            });
+            
+            // Expiry date formatting
+            const expiryInput = document.getElementById('expiryDate');
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length >= 2) {
+                    e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                
+                updateCardPreview();
+            });
+            
+            // CVV input restriction
+            const cvvInput = document.getElementById('cvv');
+            cvvInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+            });
+            
+            // Card name update
+            const cardNameInput = document.getElementById('cardName');
+            cardNameInput.addEventListener('input', updateCardPreview);
+            
+            // Update card preview
+            function updateCardPreview() {
+                const cardNumber = document.getElementById('cardNumber').value || '#### #### #### ####';
+                const cardName = document.getElementById('cardName').value.toUpperCase() || 'BANK NAME';
+                const expiryDate = document.getElementById('expiryDate').value || 'MM/YY';
+                
+                document.getElementById('cardPreview').textContent = cardNumber;
+                document.getElementById('namePreview').textContent = cardName;
+                document.getElementById('expiryPreview').textContent = expiryDate;
+            }
+            
+            // Form submission
+            const form = document.getElementById('paymentForm');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Simple validation
+                if (!validateForm()) {
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'Please fill in all required fields correctly.';
+                    return;
+                }
+                
+                // In a real implementation, you would send the form data to Web3Forms
+                // For this demo, we'll simulate a successful submission
+                
+                // Show loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    
+                    // Reset form after successful submission
+                    setTimeout(() => {
+                        form.reset();
+                        updateCardPreview();
+                        document.querySelector('.tab[data-tab="personal"]').click();
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                }, 2000);
+            });
+            
+            function validateForm() {
+                // Check if all required fields are filled
+                const requiredFields = form.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = 'var(--danger)';
+                    } else {
+                        field.style.borderColor = '#ddd';
+                    }
+                });
+                
+                // Additional validation for card number (simple check for demo)
+                const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                if (cardNumber.length !== 16 || isNaN(cardNumber)) {
+                    document.getElementById('cardNumber').style.borderColor = 'var(--danger)';
+                    isValid = false;
+                }
+                
+                // Additional validation for CVV
+                const cvv = document.getElementById('cvv').value;
+                if (cvv.length < 3 || cvv.length > 4 || isNaN(cvv)) {
+                    document.getElementById('cvv').style.borderColor = 'var(--danger)';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // Initialize card preview
+            updateCardPreview();
+        });
+    </script>
+</body>
+</html>
