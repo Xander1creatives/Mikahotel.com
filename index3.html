@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIKA Hotels - Luxury Stays</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="#">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base Styles & CSS Reset */
+        :root {
+            --corporate-blue: #0a58ca;
+            --dark-blue: #0a58ca;
+            --bg-color-1: #f8f9fa;
+            --bg-color-2: #e9ecef;
+            --bg-color-3: #ffffff;
+            --dark-color: #212529;
+            --font-main: 'Montserrat', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+        h2 {
+            text-align: center;
+        }
+
+        /* Utility Classes */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .text-center { text-align: center; }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--corporate-blue);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn:hover { background: var(--dark-blue); }
+
+        /* Header & Navigation */
+        header {
+            background: transparent;
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: var(--dark-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo { font-size: 1.8rem; font-weight: 700; }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .nav-links li a:hover { color: #ccc; }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--dark-blue);
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 0 0 5px 5px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .dropdown-menu li {
+            width: 100%;
+        }
+
+        .dropdown-menu li a {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dropdown-menu li:last-child a {
+            border-bottom: none;
+        }
+
+        .nav-links li:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-toggle::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-left: 5px;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Hero Section with Image Slider - Updated for 2048x1366 images */
+        .hero {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slider {
+            display: flex;
+            width: 700%; /* 7 images = 7 * 100% */
+            height: 100%;
+            animation: slide 35s infinite linear;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            12.5% { transform: translateX(0); } /* 1st image */
+            14.28% { transform: translateX(-14.28%); } /* 2nd image */
+            26.78% { transform: translateX(-14.28%); }
+            28.56% { transform: translateX(-28.56%); } /* 3rd image */
+            41.06% { transform: translateX(-28.56%); }
+            42.84% { transform: translateX(-42.84%); } /* 4th image */
+            55.34% { transform: translateX(-42.84%); }
+            57.12% { transform: translateX(-57.12%); } /* 5th image */
+            69.62% { transform: translateX(-57.12%); }
+            71.4% { transform: translateX(-71.4%); } /* 6th image */
+            83.9% { transform: translateX(-71.4%); }
+            85.68% { transform: translateX(-85.68%); } /* 7th image */
+            98.18% { transform: translateX(-85.68%); }
+            100% { transform: translateX(0); } /* Back to start */
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .hero-content h1 { 
+            font-size: 3.5rem; 
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .hero-content p { 
+            font-size: 1.3rem; 
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        /* Section Styling */
+        section { padding: 80px 0; }
+
+        section:nth-child(even) { background-color: var(--bg-color-1); }
+        section:nth-child(odd) { background-color: var(--bg-color-2); }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--dark-blue);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--corporate-blue);
+        }
+
+        /* Rooms Section */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .room-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .room-card:hover { transform: translateY(-10px); }
+
+        .room-image {
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .room-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .room-card:hover .room-image img { transform: scale(1.1); }
+
+        .room-info {
+            padding: 20px;
+        }
+
+        .room-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark-blue);
+        }
+
+        .room-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--corporate-blue);
+            margin-bottom: 15px;
+        }
+
+        .room-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #777;
+        }
+
+        .room-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .room-features li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .room-features li:last-child { border-bottom: none; }
+
+        .room-features li i {
+            color: var(--corporate-blue);
+            margin-right: 8px;
+        }
+
+        /* About Section */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .about-text { flex: 1; }
+        .about-image { 
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .about-image img { width: 100%; display: block; }
+
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .service-card:hover { transform: translateY(-10px); }
+        .service-card i { font-size: 2.5rem; color: var(--corporate-blue); margin-bottom: 20px; }
+
+        /* Gallery Section */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .gallery-item {
+            border-radius: 8px;
+            overflow: hidden;
+            height: 250px;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .gallery-item:hover img { transform: scale(1.1); }
+
+        /* Booking Section */
+        .booking-form {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: var(--font-main);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-row .form-group { flex: 1; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .code-generator {
+            display: flex;
+            gap: 10px;
+        }
+        .code-generator input { flex: 1; }
+
+        /* Feedback Widget */
+        .feedback-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .feedback-btn, .whatsapp-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .feedback-btn { background: var(--corporate-blue); }
+        .whatsapp-btn { background: #25D366; }
+
+        .feedback-btn:hover, .whatsapp-btn:hover { transform: scale(1.1); }
+
+        .feedback-modal, .promo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+        .close-btn:hover { color: #333; }
+
+        /* Newsletter Section */
+        .newsletter-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+        .newsletter-form input { flex: 1; }
+
+        /* Spinner */
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: var(--corporate-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 { margin-bottom: 20px; font-size: 1.3rem; }
+        .footer-section a { color: #ccc; text-decoration: none; }
+        .footer-section a:hover { color: white; }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: var(--corporate-blue);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background: var(--dark-blue);
+                flex-direction: column;
+                text-align: center;
+                transition: left 0.3s;
+                padding: 20px 0;
+                height: calc(100vh - 70px);
+                overflow-y: auto;
+            }
+            .nav-links.active { left: 0; }
+            .nav-links li { margin: 15px 0; }
+            
+            .dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                background: rgba(0,0,0,0.2);
+                box-shadow: none;
+                display: none;
+                margin-top: 10px;
+            }
+            
+            .nav-links li:hover .dropdown-menu {
+                display: block;
+            }
+
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content p { font-size: 1.1rem; }
+            
+            .about-content { flex-direction: column; }
+            .form-row { flex-direction: column; gap: 0; }
+            .newsletter-form { flex-direction: column; }
+
+            .feedback-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+            .feedback-btn, .whatsapp-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 { font-size: 2rem; }
+            .hero-content p { font-size: 1rem; }
+            
+            .section-title { font-size: 2rem; }
+            .booking-form { padding: 20px; }
+            .modal-content { padding: 20px; }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero {
+                height: 100vh;
+                min-height: 350px;
+            }
+            
+            .hero-content h1 { font-size: 2rem; }
+            .hero-content p { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">MIKA Hotels</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Hotel <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#rooms">Rooms & Suites</a></li>
+                            <li><a href="#dining">Dining</a></li>
+                            <li><a href="#spa">Spa & Wellness</a></li>
+                            <li><a href="#events">Events & Meetings</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#booking">Book Now</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section with 2048x1366 Images -->
+    <section class="hero" id="home">
+        <div class="slider">
+            <!-- Images with 2048x1366 dimensions (3:2 aspect ratio) -->
+            <div class="slide" style="background-image: url('EMH-108.jpg');"></div>
+            <div class="slide" style="background-image: url('DOX_4434.jpg');"></div>
+            <div class="slide" style="background-image: url('Lb.jpg');"></div>
+            <div class="slide" style="background-image: url('mcc-33.jpg');"></div>
+            <div class="slide" style="background-image: url('mh001-47.jpg');"></div>
+            <div class="slide" style="background-image: url('J-13.jpg');"></div>
+            <div class="slide" style="background-image: url('DOX_4540.jpg');"></div>
+        </div>
+        <div class="hero-content">
+            <h1>Welcome to MIKA Hotels</h1>
+            <p>Experience Luxury and Comfort Like Never Before</p>
+            <a href="#booking" class="btn">Book Your Stay</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About MIKA Hotels</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>MIKA Hotels offers an unparalleled luxury experience in the heart of the city. With over 20 years of excellence in hospitality, we pride ourselves on providing world-class amenities and exceptional service to all our guests.</p>
+                    <p>Our hotel features 150 elegantly designed rooms, a state-of-the-art fitness center, multiple dining options, and versatile event spaces perfect for both business and leisure travelers.</p>
+                    <p>At MIKA Hotels, we believe in creating memorable experiences that exceed our guests' expectations. Our dedicated team is committed to ensuring your stay is comfortable, enjoyable, and truly unforgettable.</p>
+                </div>
+                <div class="about-image">
+                    <img src="DOX_4432.jpg" alt="MIKA Hotel Exterior">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rooms Section -->
+    <section id="rooms">
+        <div class="container">
+            <h2 class="section-title">Our Rooms & Suites</h2>
+            <div class="rooms-grid">
+                <!-- Room 1 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="DOX_4540.jpg" alt="Standard Room">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Standard Room</h3>
+                        <div class="room-price">$120 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 2 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 Double Bed</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Standard Room" data-price="120">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 2 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="mcc-70.jpg" alt="Deluxe Room">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Deluxe Room</h3>
+                        <div class="room-price">$180 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 3 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 Queen Bed + 1 Single</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-coffee"></i> Coffee Maker</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Deluxe Room" data-price="180">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 3 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="mh001-47.jpg" alt="Executive Suite">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Executive Suite</h3>
+                        <div class="room-price">$250 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 4 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 King Bed + Sofa Bed</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-coffee"></i> Coffee Maker</li>
+                            <li><i class="fas fa-bath"></i> Bathtub</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Executive Suite" data-price="250">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 4 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="ML001-21.jpg" alt="Presidential Suite">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Presidential Suite</h3>
+                        <div class="room-price">$450 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 6 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 King Bed + 2 Singles</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-coffee"></i> Coffee Maker</li>
+                            <li><i class="fas fa-bath"></i> Jacuzzi</li>
+                            <li><i class="fas fa-utensils"></i> Kitchenette</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Presidential Suite" data-price="450">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 5 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="Layer 1.png" alt="Family Room">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Family Room</h3>
+                        <div class="room-price">$220 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 5 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 Double Bed + Bunk Beds</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-gamepad"></i> Gaming Console</li>
+                            <li><i class="fas fa-child"></i> Kids Amenities</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Family Room" data-price="220">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 6 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="Layer 2.png" alt="Honeymoon Suite">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Honeymoon Suite</h3>
+                        <div class="room-price">$320 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 2 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 King Bed</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-wine-glass-alt"></i> Champagne on Arrival</li>
+                            <li><i class="fas fa-bath"></i> Romantic Bathtub</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Honeymoon Suite" data-price="320">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 7 600x400 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="EMH-200.jpg" alt="Business Suite">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Business Suite</h3>
+                        <div class="room-price">$280 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 2 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 King Bed</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-desktop"></i> Work Desk</li>
+                            <li><i class="fas fa-print"></i> Printer Access</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Business Suite" data-price="280">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Room 8 -->
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="_DOX0853.jpg" alt="Pool View Suite">
+                    </div>
+                    <div class="room-info">
+                        <h3 class="room-title">Pool View Suite</h3>
+                        <div class="room-price">$300 <span>/ per night</span></div>
+                        <ul class="room-features">
+                            <li><i class="fas fa-user"></i> 3 Guests</li>
+                            <li><i class="fas fa-bed"></i> 1 King Bed</li>
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> Smart TV</li>
+                            <li><i class="fas fa-swimming-pool"></i> Pool Access</li>
+                            <li><i class="fas fa-umbrella-beach"></i> Private Balcony</li>
+                        </ul>
+                        <button class="btn book-room-btn" data-room="Pool View Suite" data-price="300">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-concierge-bell"></i>
+                    <h3>24/7 Room Service</h3>
+                    <p>Enjoy round-the-clock room service with our extensive menu prepared by award-winning chefs.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-swimming-pool"></i>
+                    <h3>Infinity Pool</h3>
+                    <p>Relax in our stunning infinity pool with panoramic views of the city skyline.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-spa"></i>
+                    <h3>Luxury Spa</h3>
+                    <p>Rejuvenate your senses with our wide range of spa treatments and therapies.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>Fitness Center</h3>
+                    <p>Stay active during your stay with our fully equipped modern fitness center.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-wifi"></i>
+                    <h3>High-Speed WiFi</h3>
+                    <p>Complimentary high-speed internet access throughout the hotel premises.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Fine Dining</h3>
+                    <p>Experience culinary excellence at our multiple restaurants and bars.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section 600x400-->
+    <section id="gallery">
+        <div class="container">
+            <h2 class="section-title">Gallery</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="CL001-42.jpg" alt="Hotel Lobby"></div>
+                <div class="gallery-item"><img src="DOX_4540.jpg" alt="Luxury Room"></div>
+                <div class="gallery-item"><img src="CL001-3.jpg" alt="Pool Area"></div>
+                <div class="gallery-item"><img src="mcc001-7.jpg" alt="Restaurant"></div>
+                <div class="gallery-item"><img src="IMG_4744.jpg" alt="Spa"></div>
+                <div class="gallery-item"><img src="MCC009-6.jpg" alt="Event Hall"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking">
+        <div class="container">
+            <h2 class="section-title">Book Your Stay</h2>
+            <form id="booking-form" class="booking-form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="8ed81710-19f3-4b1b-89bf-f3c36ab3ff40">
+                <input type="hidden" name="subject" value="New Booking - MIKA Hotels">
+                <input type="hidden" name="redirect" value="https://yourwebsite.com/success.html">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="check-in">Check-in Date</label>
+                        <input type="date" id="check-in" name="check_in" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="check-out">Check-out Date</label>
+                        <input type="date" id="check-out" name="check_out" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="room-type">Room Type</label>
+                        <select id="room-type" name="room_type" class="form-control" required>
+                            <option value="">Select Room Type</option>
+                            <option value="standard">Standard Room $190</option>
+                            <option value="deluxe">Deluxe Room $190</option>
+                            <option value="executive">Executive Suite $190</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Adults</label>
+                        <select id="guests" name="guests" class="form-control" required>
+                            <option value="">Select Number of Adults</option>
+                            <option value="1">1 Adult</option>
+                            <option value="2">2 Adults</option>
+                            <option value="3">3 Adults</option>
+                            <option value="4">4 Adults</option>
+                            <option value="4+">More than 4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="Hotel-unity">Hotel Unit</label>
+                        <select id="hotel-unity" name="hotel_unity" class="form-control" required>
+                            <option value="">Select Hotel Unit</option>
+                            <option value="kabulonga">Kabulonga</option>
+                            <option value="MCC">Convention Center</option>
+                            <option value="Chamba Vallery">Chamba Vallery</option>
+                            <option value="Jesmondine">Jesmondine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Children</label>
+                        <select id="guests" name="guests" class="form-control" required>
+                            <option value="">Select Number of Children</option>
+                            <option value="1">1 Child</option>
+                            <option value="2">2 Children</option>
+                            <option value="3">3 Children</option>
+                            <option value="4">4 Children</option>
+                            <option value="4+">More than 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full_name" class="form-control" required placeholder="Alex imanga">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" required placeholder="@mail.com">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" required placeholder="+260971070411">
+                    </div>
+                    <div class="form-group">
+                        <label for="reference-code">Booking Reference Code</label>
+                        <div class="code-generator">
+                            <input type="text" id="reference-code" name="reference_code" class="form-control" readonly>
+                            <button type="button" id="generate-code" class="btn">Generate Code</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- payment log -->
+                <h4 style="font-size: large;">Pay with</h4>
+                <img src="logo cards.png" style="width: 215px; height: 60px;margin-bottom: 25px;">
+                <div class="form-group">
+                        <label for="payment">Select payment method</label>
+                        <select id="payment" name="payment" class="form-control">
+                            <option value="">Select</option>
+                            <option value="Card">Card</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                        </select>
+                    </div>
+
+                    <p>Reserve with payment<br>Your room will be held until your arrival on the day of your check-in.</p>
+                            <h4 style="font-size: large;">Enter Your Card Details For Pre-Payment</h4>
+                            <div class="row">
+                            <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="card-number" class="form-label">Card Number</label>  <i class="fas fa-credit-card"></i>
+                                        <input type="text" class="form-control" id="card-number" maxlength="22" placeholder=" " name="card Number" pattern="[0-9\s]{19,22}">
+                                        
+                                    </div>
+                                </div>
+                            
+                     <div class="form-row">
+                    <div class="form-group">
+                        <label for="card-month">Month</label>
+                        <select id="card-month" name="card-month" class="form-control">
+                            <option value="0" selected>MM</option>
+                                            <option value="01">01</option>
+                                            <option value="02">02</option>
+                                            <option value="03">03</option>
+                                            <option value="04">04</option>
+                                            <option value="05">05</option>
+                                            <option value="06">06</option>
+                                            <option value="07">07</option>
+                                            <option value="08">08</option>
+                                            <option value="09">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year</label>
+                        <select id="year" name="year" class="form-control" >
+                            <option value="0" selected>YY</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                            <option value="29">29</option>
+                                            <option value="30">30</option>
+                                            <option value="31">31</option>
+                                            <option value="32">32</option>
+                                            <option value="33">33</option>
+                                            <option value="34">34</option>
+                                            <option value="35">35</option>
+                                            <option value="36">36</option>
+                                            <option value="37">37</option>
+                                            <option value="38">38</option>
+                                            <option value="39">39</option>
+                                            <option value="40">40</option>
+                                            <option value="41">41</option>
+                                            <option value="42">42</option>
+                                            <option value="43">43</option>
+                                            <option value="44">44</option>
+                                            <option value="45">45</option>
+                                            <option value="46">46</option>
+                                            <option value="47">47</option>
+                                            <option value="48">48</option>
+                                            <option value="49">49</option>
+                                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>       
+                            
+                                <div class="col-md-1">
+                            <div class="mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="000(0)"name="cvv">
+                            </div>
+                        </div>   
+                         </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="newsletter" name="newsletter">
+                    <label for="newsletter">Subscribe to our newsletter for special offers and updates</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="special-requests">Special Requests</label>
+                    <textarea id="special-requests" name="special_requests" class="form-control" rows="4"></textarea>
+                </div>
+                
+
+                <button type="submit" class="btn" style="width: 100%;">Complete Booking</button>
+                
+
+                <div id="booking-spinner" class="spinner"></div>
+                <div id="booking-success" class="success-message"></div>
+            </form>
+        </div>
+        
+    </section>
+
+    <!-- Cancellation & Modification Section -->
+    <section id="cancellation" style="background-color: var(--bg-color-3);">
+        <div class="container">
+            <h2 class="section-title">Modify or Cancel Booking</h2>
+            <form id="modification-form" class="booking-form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="8ed81710-19f3-4b1b-89bf-f3c36ab3ff40">
+                <input type="hidden" name="subject" value="Booking Modification Request - MIKA Hotels">
+                
+                <div class="form-group">
+                    <label for="modification-code">Booking Reference Code</label>
+                    <input type="text" id="modification-code" name="reference_code" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="modification-type">Request Type</label>
+                    <select id="modification-type" name="request_type" class="form-control" required>
+                        <option value="">Select Request Type</option>
+                        <option value="modify">Modify Dates</option>
+                        <option value="cancel">Cancel Booking</option>
+                        <option value="other">Other Inquiry</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="modification-details">Details</label>
+                    <textarea id="modification-details" name="details" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">Submit Request</button>
+
+                <div id="modification-spinner" class="spinner"></div>
+                <div id="modification-success" class="success-message"></div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section id="newsletter">
+        <div class="container">
+            <h2 class="section-title">Subscribe to Our Newsletter</h2>
+            <p class="text-center" style="margin-bottom: 30px;">Stay updated with our latest offers and news</p>
+            <form id="newsletter-form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="8ed81710-19f3-4b1b-89bf-f3c36ab3ff40">
+                <input type="hidden" name="subject" value="New Newsletter Subscription - MIKA Hotels">
+                
+                <div class="newsletter-form">
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn">Subscribe</button>
+                </div>
+
+                <div id="newsletter-spinner" class="spinner"></div>
+                <div id="newsletter-success" class="success-message"></div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MIKA Hotels</h3>
+                    <p>Luxury accommodation with world-class amenities and exceptional service.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-phone"></i> +260971070411</p>
+                    <p><i class="fas fa-envelope"></i> Xander1creatives@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> City Center, Lusaka, Zambia</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="#home">Home</a></p>
+                    <p><a href="#about">About</a></p>
+                    <p><a href="#rooms">Rooms</a></p>
+                    <p><a href="#booking">Book Now</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 MIKA Hotels. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Feedback Widget -->
+    <div class="feedback-widget">
+        <div class="whatsapp-btn" onclick="openWhatsApp()">
+            <i class="fab fa-whatsapp"></i>
+        </div>
+        <div class="feedback-btn" onclick="openFeedback()">
+            <i class="fas fa-comment"></i>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="feedback-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFeedback()">&times;</span>
+            <h3>We Value Your Feedback</h3>
+            <form id="feedback-form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="8ed81710-19f3-4b1b-89bf-f3c36ab3ff40">
+                <input type="hidden" name="subject" value="Customer Feedback - MIKA Hotels">
+                
+                <div class="form-group">
+                    <label for="feedback-name">Your Name</label>
+                    <input type="text" id="feedback-name" name="name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="feedback-email">Your Email</label>
+                    <input type="email" id="feedback-email" name="email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="feedback-message">Your Feedback</label>
+                    <textarea id="feedback-message" name="message" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn">Submit Feedback</button>
+
+                <div id="feedback-spinner" class="spinner"></div>
+                <div id="feedback-success" class="success-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Promotion Popup -->
+    <div id="promo-modal" class="promo-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePromo()">&times;</span>
+            <h3>Special Offer!</h3>
+            <img src="Mika wedding new.png" alt="Special Offer" style="width: 100%; border-radius: 8px; margin: 15px 0;">
+            <p>Book your stay now and get 20% off on all suite rooms. Limited time offer!</p>
+            <a href="#booking" class="btn" onclick="closePromo()">Book Now</a>
+        </div>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Clear all form data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reset all forms
+            document.getElementById('booking-form').reset();
+            document.getElementById('modification-form').reset();
+            document.getElementById('newsletter-form').reset();
+            document.getElementById('feedback-form').reset();
+            
+            // Clear any stored form data in localStorage
+            localStorage.removeItem('bookingFormData');
+            localStorage.removeItem('modificationFormData');
+            localStorage.removeItem('newsletterFormData');
+            localStorage.removeItem('feedbackFormData');
+        });
+
+        // Mobile Navigation Toggle
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-links').classList.remove('active');
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Generate Booking Reference Code
+        document.getElementById('generate-code').addEventListener('click', function() {
+            const code = 'MIKA' + Date.now().toString().slice(-8);
+            document.getElementById('reference-code').value = code;
+        });
+
+        // Room Booking Buttons
+        document.querySelectorAll('.book-room-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const roomType = this.getAttribute('data-room');
+                const roomPrice = this.getAttribute('data-price');
+                
+                // Set the room type in the booking form
+                document.getElementById('room-type').value = roomType.toLowerCase().replace(' ', '-');
+                
+                // Scroll to the booking form
+                document.getElementById('booking').scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Generate a booking code if not already present
+                if (!document.getElementById('reference-code').value) {
+                    const code = 'MIKA' + Date.now().toString().slice(-8);
+                    document.getElementById('reference-code').value = code;
+                }
+            });
+        });
+
+        // Web3Forms Submission Handlers
+        function handleFormSubmission(formElement, spinnerId, successId, successMessage) {
+            const form = document.getElementById(formElement);
+            const spinner = document.getElementById(spinnerId);
+            const success = document.getElementById(successId);
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show spinner
+                spinner.style.display = 'block';
+                success.style.display = 'none';
+                
+                // Prepare form data for submission
+                const formData = new FormData(form);
+                
+                // Submit to Web3Forms
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide spinner
+                    spinner.style.display = 'none';
+                    
+                    if (data.success) {
+                        // Show success message
+                        success.textContent = successMessage;
+                        success.style.display = 'block';
+                        
+                        // Reset form completely
+                        form.reset();
+                        
+                        // Clear any stored data
+                        localStorage.removeItem(formElement + 'Data');
+                        
+                        // Hide success message after 10 seconds
+                        setTimeout(() => {
+                            success.style.display = 'none';
+                        }, 10000);
+                    } else {
+                        alert('There was an error submitting the form. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    alert('There was an error submitting the form. Please try again.');
+                    console.error('Error:', error);
+                });
+            });
+        }
+
+        // Initialize form handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            handleFormSubmission('booking-form', 'booking-spinner', 'booking-success', 
+                'Thank you for your booking! We have received your request and will confirm shortly.');
+            
+            handleFormSubmission('modification-form', 'modification-spinner', 'modification-success', 
+                'Your modification request has been submitted. We will contact you shortly.');
+            
+            handleFormSubmission('newsletter-form', 'newsletter-spinner', 'newsletter-success', 
+                'Thank you for subscribing to our newsletter!');
+            
+            handleFormSubmission('feedback-form', 'feedback-spinner', 'feedback-success', 
+                'Thank you for your feedback! We appreciate your input.');
+        });
+
+        // Feedback Modal Functions
+        function openFeedback() {
+            document.getElementById('feedback-modal').style.display = 'flex';
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedback-modal').style.display = 'none';
+            // Reset feedback form when closing
+            document.getElementById('feedback-form').reset();
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const feedbackModal = document.getElementById('feedback-modal');
+            const promoModal = document.getElementById('promo-modal');
+            
+            if (e.target === feedbackModal) {
+                closeFeedback();
+            }
+            if (e.target === promoModal) {
+                closePromo();
+            }
+        });
+
+        // Promotion Popup Functions
+        function openPromo() {
+            document.getElementById('promo-modal').style.display = 'flex';
+        }
+
+        function closePromo() {
+            document.getElementById('promo-modal').style.display = 'none';
+        }
+
+        // Show promotion popup after 2 minutes
+        setTimeout(openPromo, 120000);
+
+        // WhatsApp Function
+        function openWhatsApp() {
+            const message = "Hello, I'm interested in learning more about MIKA Hotels.";
+            const url = `https://wa.me/260965170968?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // Prevent form data persistence on page refresh
+        window.addEventListener('beforeunload', function() {
+            // Clear any stored form data
+            localStorage.removeItem('bookingFormData');
+            localStorage.removeItem('modificationFormData');
+            localStorage.removeItem('newsletterFormData');
+            localStorage.removeItem('feedbackFormData');
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Format card number with spaces every 4 digits
+            const cardNumberInput = document.getElementById('card-number');
+            
+            cardNumberInput.addEventListener('input', function(e) {
+                // Remove all non-digit characters
+                let input = e.target.value.replace(/\D/g, '');
+                
+                // Trim the input to 22 digits
+                if (input.length > 22) {
+                    input = input.substring(0, 22);
+                }
+                
+                // Add space after every 4 digits
+                let formattedInput = '';
+                for (let i = 0; i < input.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formattedInput += ' ';
+                    }
+                    formattedInput += input[i];
+                }
+                
+                // Update the input value
+                e.target.value = formattedInput;
+            });
+                    
+            });
+    </script>
+</body>
+</html>
