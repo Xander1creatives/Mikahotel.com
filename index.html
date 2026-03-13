@@ -1824,7 +1824,7 @@
       </div>
     </div>
     <div class="messages" id="messages">
-      <div class="message assistant-message">Hello! I'm your AI assistant. Ask me anything based on the uploaded document.</div>
+      <div class="message assistant-message">Hello! I'm your Mika AI assistant.</div>
     </div>
     <div class="input-area">
       <input type="text" id="userInput" placeholder="Type your message..." />
@@ -2385,7 +2385,7 @@
         // Supabase configuration – replace with your values
     const SUPABASE_URL = 'https://gtghxawvajgscjibjckl.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_PLRbtCNdArdK70RJfdzSxw_iPNh3Oni';
-    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat`;
+    const EDGE_FUNCTION_URL = `https://gtghxawvajgscjibjckl.supabase.co/functions/v1/supabase-functions-deploy-chat---no-verify-jwt`;
 
     // Session management
     function generateSessionId() {
@@ -2436,7 +2436,7 @@
     // Clear UI messages (leaves initial assistant message)
     function resetUI() {
       messagesContainer.innerHTML = '';
-      appendMessage('Hello! I\'m your AI assistant. Ask me anything based on the uploaded document.', 'assistant');
+      appendMessage('Hello! I\'m your Mika Hotel AI assistant');
     }
 
     // New Chat: generate new session ID, clear UI, and reset session in localStorage
