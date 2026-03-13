@@ -321,6 +321,180 @@
             cursor: pointer;
             color: var(--secondary-color);
         }
+
+        /* Floating chat button */
+    .chat-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #0635a2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+      z-index: 1000;
+      animation: pulse 1.5s infinite;
+      
+      
+    }
+
+    .chat-button:hover {
+      background: #0f8eef;
+      transform: scale(1.05);
+    }
+
+    /* Chat window */
+    .chat-window {
+      position: fixed;
+      bottom: 100px;
+      left: 30px;
+      width: 310px;
+      height: 370px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: opacity 0.3s, transform 0.3s;
+      transform-origin: bottom right;
+      z-index: 1000;
+    }
+
+    .chat-window.closed {
+      opacity: 0;
+      transform: scale(0.8);
+      pointer-events: none;
+    }
+
+    /* Header */
+    .chat-header {
+      background: #2563eb;
+      color: white;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      gap: 8px;
+    }
+
+    .header-left button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .header-left button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .header-right button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Messages */
+    .messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      word-wrap: break-word;
+      line-height: 1.4;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: #2563eb;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .assistant-message {
+      align-self: flex-start;
+      background: #e5e7eb;
+      color: #1f2937;
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Input area */
+    .input-area {
+      border-top: 1px solid #e5e7eb;
+      padding: 12px;
+      display: flex;
+      gap: 8px;
+      background: white;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 24px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input-area input:focus {
+      border-color: #2563eb;
+    }
+
+    .input-area button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 10px 18px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .input-area button:hover {
+      background: #1d4ed8;
+    }
+
+    .input-area button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .typing-indicator {
+      padding: 10px 14px;
+      background: #e5e7eb;
+      border-radius: 18px;
+      align-self: flex-start;
+      color: #6b7280;
+      font-style: italic;
+    }
         
         /* Popup Modal */
         .popup-modal {
@@ -1635,6 +1809,29 @@
             </div>
         </div>
     </footer>
+    <!-- Chat Button -->
+  <button class="chat-button" id="chatButton"><img src="Mika Ai.png" style="height: 80px; width: 77px;"></button>
+
+  <!-- Chat Window -->
+  <div class="chat-window closed" id="chatWindow">
+    <div class="chat-header">
+      <div class="header-left">
+        <button id="newChatBtn">New Chat</button>
+        <button id="clearChatBtn">Clear Chat</button>
+      </div>
+      <div class="header-right">
+        <button id="closeChat">✕</button>
+      </div>
+    </div>
+    <div class="messages" id="messages">
+      <div class="message assistant-message">Hello! I'm your AI assistant. Ask me anything based on the uploaded document.</div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button id="sendButton">Send</button>
+    </div>
+  </div>
+
 
     <!-- Floating WhatsApp Chat -->
     <a href="https://wa.me/+260961876570" class="floating-whatsapp" target="_blank">
@@ -2184,6 +2381,163 @@
                 }, { once: true });
             }
         });
+
+        // Supabase configuration – replace with your values
+    const SUPABASE_URL = 'https://gtghxawvajgscjibjckl.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_PLRbtCNdArdK70RJfdzSxw_iPNh3Oni';
+    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat`;
+
+    // Session management
+    function generateSessionId() {
+      return crypto.randomUUID ? crypto.randomUUID() : 'session-' + Date.now() + '-' + Math.random().toString(36).substring(2);
+    }
+
+    let sessionId = localStorage.getItem('chatSessionId');
+    if (!sessionId) {
+      sessionId = generateSessionId();
+      localStorage.setItem('chatSessionId', sessionId);
+    }
+
+    // DOM elements
+    const chatButton = document.getElementById('chatButton');
+    const chatWindow = document.getElementById('chatWindow');
+    const closeChat = document.getElementById('closeChat');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('userInput');
+    const sendButton = document.getElementById('sendButton');
+
+    // Helper: append message to UI
+    function appendMessage(content, role) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', role === 'user' ? 'user-message' : 'assistant-message');
+      messageDiv.textContent = content;
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Helper: show typing indicator and return its ID
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('typing-indicator');
+      typingDiv.id = 'typing-' + Date.now();
+      typingDiv.textContent = 'Assistant is typing...';
+      messagesContainer.appendChild(typingDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      return typingDiv.id;
+    }
+
+    function removeTypingIndicator(id) {
+      const typing = document.getElementById(id);
+      if (typing) typing.remove();
+    }
+
+    // Clear UI messages (leaves initial assistant message)
+    function resetUI() {
+      messagesContainer.innerHTML = '';
+      appendMessage('Hello! I\'m your AI assistant. Ask me anything based on the uploaded document.', 'assistant');
+    }
+
+    // New Chat: generate new session ID, clear UI, and reset session in localStorage
+    async function newChat() {
+      sessionId = generateSessionId();
+      localStorage.setItem('chatSessionId', sessionId);
+      resetUI();
+    }
+
+    // Clear Chat: delete all messages for the current session from the database, then reset UI
+    async function clearChat() {
+      try {
+        // Disable buttons while clearing
+        newChatBtn.disabled = true;
+        clearChatBtn.disabled = true;
+
+        const response = await fetch(`${EDGE_FUNCTION_URL}?sessionId=${encodeURIComponent(sessionId)}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to clear chat');
+        }
+
+        // Success: clear UI
+        resetUI();
+      } catch (error) {
+        console.error('Clear chat error:', error);
+        alert('Could not clear chat. Please try again.');
+      } finally {
+        newChatBtn.disabled = false;
+        clearChatBtn.disabled = false;
+      }
+    }
+
+    // Send message to the edge function
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      userInput.disabled = true;
+      sendButton.disabled = true;
+
+      appendMessage(text, 'user');
+      userInput.value = '';
+
+      const typingId = showTypingIndicator();
+
+      try {
+        const response = await fetch(EDGE_FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({
+            message: text,
+            sessionId: sessionId
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Request failed');
+        }
+
+        const data = await response.json();
+        removeTypingIndicator(typingId);
+        appendMessage(data.reply, 'assistant');
+      } catch (error) {
+        removeTypingIndicator(typingId);
+        appendMessage('Sorry, something went wrong. Please try again.', 'assistant');
+        console.error('Chat error:', error);
+      } finally {
+        userInput.disabled = false;
+        sendButton.disabled = false;
+        userInput.focus();
+      }
+    }
+
+    // Event listeners
+    chatButton.addEventListener('click', () => {
+      chatWindow.classList.remove('closed');
+    });
+
+    closeChat.addEventListener('click', () => {
+      chatWindow.classList.add('closed');
+    });
+
+    newChatBtn.addEventListener('click', newChat);
+    clearChatBtn.addEventListener('click', clearChat);
+    sendButton.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
     </script>
 </body>
 </html>
