@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>LuxeStay · Hotel‑Specific Room Galleries</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fc;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      color: #1e293b;
+    }
+    .app-container {
+      max-width: 1400px;
+      width: 100%;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .left-panel {
+      flex: 2;
+      min-width: 280px;
+      background: white;
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+    }
+    .right-panel {
+      flex: 1.2;
+      min-width: 300px;
+      background: white;
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    h2 { font-weight: 600; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    h3 { font-weight: 600; margin-bottom: 16px; font-size: 1.2rem; }
+    .booking-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+    .input-group { flex: 1 1 160px; display: flex; flex-direction: column; gap: 5px; }
+    label { font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; }
+    select, input {
+      padding: 12px 12px; border: 1.5px solid #e2e8f0; border-radius: 16px;
+      font-size: 0.95rem; background: white; transition: border 0.15s;
+    }
+    select:focus, input:focus { outline: none; border-color: #2563eb; }
+    .btn {
+      background: #2563eb; color: white; border: none; padding: 12px 20px;
+      border-radius: 40px; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: 0.15s; border: 1px solid transparent; white-space: nowrap;
+    }
+    .btn-outline { background: white; color: #1e293b; border: 1.5px solid #e2e8f0; }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn:hover { background: #1d4ed8; }
+    .btn-block { width: 100%; }
+    
+    .room-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .room-card {
+      background: white; border-radius: 24px; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04); transition: all 0.25s;
+      border: 1px solid #f0f4f9; cursor: pointer;
+    }
+    .room-card:hover { box-shadow: 0 16px 30px rgba(0,0,0,0.08); transform: translateY(-4px); }
+    .room-main-img { width: 100%; height: 180px; object-fit: cover; background: #e2e8f0; }
+    .thumbnails-row { display: flex; gap: 6px; padding: 10px 12px; background: #fafcff; border-bottom: 1px solid #edf2f7; }
+    .thumbnails-row img { width: 25%; height: 50px; object-fit: cover; border-radius: 12px; border: 1px solid #eef2f6; }
+    .room-card-content { padding: 16px 16px 20px; }
+    .room-card h4 { font-size: 1.2rem; font-weight: 600; margin-bottom: 4px; }
+    .price { font-weight: 700; font-size: 1.5rem; color: #0f172a; margin: 8px 0 4px; }
+    .per-night { font-size: 0.75rem; color: #64748b; font-weight: 400; }
+    .room-desc { margin: 8px 0 12px; color: #475569; font-size: 0.9rem; }
+    .badge { background: #e6edfb; color: #2563eb; padding: 6px 12px; border-radius: 40px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 14px; }
+    .add-to-cart-btn { width: 100%; padding: 12px; border-radius: 30px; font-weight: 600; }
+
+    /* Cart */
+    .cart-item-detailed {
+      background: white; border-radius: 20px; padding: 16px; margin-bottom: 14px;
+      border: 1px solid #edf2f7; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    }
+    .cart-item-header { display: flex; gap: 14px; margin-bottom: 12px; }
+    .cart-thumbnail { width: 70px; height: 60px; border-radius: 14px; object-fit: cover; }
+    .cart-item-title { flex: 1; }
+    .cart-item-title h4 { font-size: 1rem; margin-bottom: 4px; }
+    .hotel-name { font-size: 0.8rem; color: #64748b; }
+    .cart-amenities { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.75rem; color: #475569; margin: 12px 0; }
+    .cart-amenities i { color: #2563eb; width: 16px; }
+    .cart-footer { display: flex; justify-content: space-between; align-items: center; }
+    .cart-price-info { font-weight: 600; }
+    .cart-price-info small { font-weight: 400; color: #64748b; }
+    .qty-controls { display: flex; align-items: center; gap: 12px; }
+    .qty-btn {
+      background: #f1f5f9; border: none; width: 32px; height: 32px;
+      border-radius: 32px; font-weight: bold; cursor: pointer; color: #1e293b;
+    }
+    .qty-btn:hover { background: #e2e8f0; }
+    .qty-num { font-weight: 600; min-width: 24px; text-align: center; }
+    .remove-btn { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.2rem; padding: 6px; }
+    .remove-btn:hover { color: #ef4444; }
+    .summary-total {
+      margin-top: 20px; font-size: 1.3rem; font-weight: 700;
+      display: flex; justify-content: space-between;
+      border-top: 2px dashed #cbd5e1; padding-top: 18px;
+    }
+    .card-element-container { padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 18px; margin: 16px 0; }
+    .success-message { background: #e6f7e6; border-radius: 24px; padding: 24px; text-align: center; color: #0e6245; margin-top: 20px; }
+    .hidden { display: none !important; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .guest-row { display: flex; gap: 8px; }
+    .guest-row input { width: 100%; min-width: 60px; }
+    .close-icon { cursor: pointer; font-size: 1.8rem; }
+    .error-text { color: #dc2626; font-size: 0.8rem; margin-top: 4px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(3px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+    }
+    .modal-card {
+      background: white; max-width: 800px; width: 100%; max-height: 90vh;
+      border-radius: 28px; overflow-y: auto; padding: 20px 24px; position: relative;
+    }
+    .modal-close { position: absolute; top: 16px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #64748b; }
+    .gallery-main { width: 100%; height: 260px; object-fit: cover; border-radius: 20px; margin-bottom: 12px; }
+    .thumbnail-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .thumbnail { width: 70px; height: 60px; object-fit: cover; border-radius: 12px; cursor: pointer; border: 2px solid transparent; }
+    .thumbnail.active { border-color: #2563eb; }
+    .amenities-list { display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 14px 0; }
+    .amenity-item i { width: 20px; color: #2563eb; }
+    .modal-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 18px; gap: 15px; }
+
+    @media screen and (max-width: 640px) {
+      body { padding: 10px; }
+      .app-container { flex-direction: column; }
+      .right-panel { position: static; width: 100%; }
+      .room-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="left-panel" id="leftPanel">
+    <div id="searchArea">
+      <a href="index.html"><h2><i class="fas fa-hotel" style="color:#073598"></i>Home</h2></a>
+      <div class="booking-form">
+        <div class="form-row">
+          <div class="input-group"><label>Hotel</label><select id="hotelSelect"><option value="Mika Kabulonga">Mika Kabulonga</option><option value="Chamba Valley">Chamba Valley</option><option value="Mika Lodge">Mika Lodge</option><option value="Convention Center">Convention Center</option></select></div>
+          <div class="input-group"><label>Check-in</label><input type="date" id="checkIn"></div>
+          <div class="input-group"><label>Check-out</label><input type="date" id="checkOut"></div>
+        </div>
+        <div class="form-row">
+          <div class="input-group"><label>Rooms</label><select id="roomCount"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+          <div class="input-group"><label>Guests</label><div class="guest-row"><input type="number" id="adults" min="1" value="2" placeholder="Adults"><input type="number" id="children" min="0" value="0" placeholder="Children"></div></div>
+          <div class="input-group"><button class="btn" id="searchBtn"><i class="fas fa-search"></i> Search</button></div>
+        </div>
+        <div id="dateError" class="error-text"></div>
+      </div>
+      <div id="roomsContainer" class="room-grid"></div>
+    </div>
+    <div id="paymentArea" class="hidden">
+      <div class="flex-between"><h2><i class="fas fa-credit-card"></i> Payment</h2><i class="fas fa-times close-icon" id="closePaymentBtn"></i></div>
+      <div><div class="input-group"><label>Full name</label><input type="text" id="userFullName" placeholder="John Doe"></div><div class="input-group"><label>Email</label><input type="email" id="userEmail" placeholder="john@example.com"></div></div>
+      <div class="card-element-container"><div id="card-element"></div><div id="cardErrors" class="error-text"></div></div>
+      <button class="btn btn-block" id="payNowBtn"><i class="fas fa-lock"></i> Pay & Confirm</button>
+      <div id="paymentSuccessMsg" class="success-message hidden"><i class="fas fa-check-circle" style="font-size:2.5rem;"></i><h3>Payment successful!</h3><p id="successUserDetails"></p><button class="btn btn-outline" id="closeSuccessBtn" style="margin-top:16px;">Close & finish</button></div>
+      <p style="margin-top:12px; font-size:0.8rem;"><i class="fas fa-shield-alt"></i> Test card: 4242 4242 4242 4242</p>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <h2><i class="fas fa-shopping-bag"></i> Your cart</h2>
+    <div id="cartItemsContainer"></div>
+    <div id="cartTotalDisplay" class="summary-total"><span>Total</span><span id="cartTotalAmount">$0</span></div>
+    <div style="margin-top:20px;"><button class="btn btn-block" id="proceedToPaymentBtn" disabled><i class="fas fa-arrow-right"></i> Proceed to payment</button><button class="btn btn-outline btn-block" id="clearCartBtn" style="margin-top:8px;"><i class="fas fa-trash-alt"></i> Clear cart</button></div>
+  </div>
+</div>
+
+<div id="roomModal" class="modal-overlay hidden">
+  <div class="modal-card"><i class="fas fa-times modal-close" id="closeModalBtn"></i><div id="modalContent"></div></div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    /* ------------------------------------------------------------
+       📁 IMAGE SETUP – HOTEL‑SPECIFIC ROOM GALLERIES (5 IMAGES EACH)
+       
+       Primary source: local 'img' folder organized by hotel and room type.
+       Example: img/grand-plaza/deluxe-king-1.jpg ... deluxe-king-5.jpg
+       
+       Each hotel has its own distinct placeholder image sets per room type,
+       so a Deluxe King at Grand Plaza looks different from one at Ocean View Resort.
+    ------------------------------------------------------------ */
+
+    // Helper to generate local image paths (5 images per room)
+    function getLocalImages(hotelSlug, roomTypeSlug) {
+      return Array.from({ length: 5 }, (_, i) => 
+        `img/${hotelSlug}/${roomTypeSlug}-${i+1}.jpg`
+      );
+    }
+
+    // HOTEL‑SPECIFIC PLACEHOLDER IMAGE SETS (5 unique Unsplash IDs per room type per hotel)
+    const HOTEL_PLACEHOLDERS = {
+      'Mika Kabulonga': {
+        'Deluxe Room': ['MH/Deluxe/mcc-70.jpg','MH/Deluxe/mh001-48.jpg','MH/Deluxe/mh001-47.jpg','MH/Deluxe/ML001-21.jpg','MH/Deluxe/mh001-47.jpg'],
+        'Standard Single': ['MH/Standard Single/CVEH-2.jpg','MH/Standard Single/IMG_7750.jpg','MH/Standard Single/CVEH-2.jpg','MH/Standard Single/IMG_7750.jpg','MH/Standard Single/mcc001-7.jpg'],
+        'Standard Twin': ['MH/Standard Twin/mcc-33.jpg','MH/Standard Twin/mcc-70.jpg','MH/Standard Twin/mh001-48.jpg','MH/Standard Twin/ML0-34.jpg','MH/Standard Twin/MMM_4648.jpg'],
+        'Standard Double': ['MH/Standard Double/DOX_4434.jpg','MH/Standard Double/DOX_4540.jpg','MH/Standard Double/MMM_4703.jpg','MH/Standard Double/DOX_4540.jpg','MH/Standard Double/DOX_4434.jpg'],
+        'Double Twin': ['MH/Double Twin/DOX_3531.jpg','MH/Double Twin/IMG_4744.jpg','MH/Double Twin/DOX_3527.jpg','MH/Double Twin/EMH-40.jpg','MH/Double Twin/_DOX0853.jpg'],
+        'Executive': ['MH/Executive/ML001-21.jpg','MH/Executive/mcc-70.jpg','MH/Executive/_DOX1050.jpg','MH/Executive/ML0-34.jpg','MH/Executive/mh001-3.jpg']
+        
+      },
+      'Chamba Valley': {
+        'Deluxe Room': ['CVH/Deluxe/DOX_3527.jpg','CVH/Deluxe/DOX_3531.jpg','CVH/Deluxe/EMH-21.jpg','CVH/Deluxe/EMH-48.jpg','CVH/Deluxe/EMH-200.jpg'],
+        'Standard Single': ['CVH/Standard Single/MMM_4703.jpg','CVH/Standard Single/DOX_4540.jpg','CVH/Standard Single/IMG_7750.jpg','CVH/Standard Single/mcc001-7.jpg','CVH/Standard Single/DOX_4434.jpg'],
+        'Standard Twin': ['CVH/Standard Twin/mcc-70.jpg','CVH/Standard Twin/mh001-48.jpg','CVH/Standard Twin/ML0-34.jpg','CVH/Standard Twin/mcc-33.jpg','CVH/Standard Twin/MMM_4648.jpg'],
+        'Standard Double': ['CVH/Standard Double/CVEH-2.jpg','CVH/Standard Double/mcc001-17.jpg','CVH/Standard Double/mcc001-7.jpg','CVH/Standard Double/CVEH-2.jpg','CVH/Standard Double/mcc001-17.jpg'],
+        'Double Twin': ['CVH/Double Twin/mcc-70.jpg','CVH/Double Twin/ML001-21.jpg','CVH/Double Twin/_DOX1050.jpg','CVH/Double Twin/mh001-3.jpg','CVH/Double Twin/ML0-34.jpg'],
+        'Executive': ['CVH/Executive/DOX_3531.jpg','CVH/Executive/DOX_3527.jpg','CVH/Executive/_DOX0853.jpg','CVH/Executive/IMG_4744.jpg','CVH/Executive/EMH-40.jpg']
+        
+      },
+      'Mika Lodge': {
+         'Deluxe Room': ['ML/Deluxe/mh001-48.jpg','ML/Deluxe/mcc-70.jpg','ML/Deluxe/MMM_4648.jpg','ML/Deluxe/mcc-33.jpg','ML/Deluxe/ML0-34.jpg'],
+        'Standard Single': ['ML/Standard Single/_DOX1050.jpg','ML/Standard Single/IMG_7750.jpg','ML/Standard Single/mh001-3.jpg','ML/Standard Single/CVEH-2.jpg','ML/Standard Single/_DOX1050.jpg'],
+        'Standard Twin': ['ML/Standard Twin/mcc-70.jpg','ML/Standard Twin/J-13.jpg','ML/Standard Twin/ML0-34.jpg','ML/Standard Twin/mcc-70.jpg','ML/Standard Twin/J-13.jpg'],
+        'Standard Double': ['ML/Standard Double/DOX_4540.jpg','ML/Standard Double/MMM_4703.jpg','ML/Standard Double/DOX_4434.jpg','ML/Standard Double/DOX_4540.jpg','ML/Standard Double/MMM_4703.jpg'],
+        'Double Twin': ['ML/Double Twin/DOX_3527.jpg','ML/Double Twin/DOX_3531.jpg','ML/Double Twin/EMH-40.jpg','ML/Double Twin/IMG_4744.jpg','ML/Double Twin/_DOX0853.jpg'],
+        'Executive': ['ML/Executive/ML001-21.jpg','ML/Executive/mh001-48.jpg','ML/Executive/mcc-70.jpg','ML/Executive/ML0-34.jpg','ML/Executive/mh001-47.jpg']
+      },
+      'Convention Center': {
+        'Deluxe Room': ['MCC/Deluxe/mcc-70.jpg','MCC/Deluxe/mh001-48.jpg','MCC/Deluxe/EMH-53.jpg','MCC/Deluxe/mh001-47.jpg','MCC/Deluxe/EMH-52.jpg'],
+        'Standard Single': ['MCC/Standard Single/mcc-70.jpg','MCC/Standard Single/ML001-21.jpg','MCC/Standard Single/_DOX1050.jpg','MCC/Standard Single/mh001-3.jpg','MCC/Standard Single/ML0-34.jpg'],
+        'Standard Twin': ['MCC/Double Twin/mh001-48.jpg','MCC/Double Twin/mcc-70.jpg','MCC/Double Twin/MMM_4648.jpg','MCC/Double Twin/ML0-34.jpg','MCC/Double Twin/mcc-33.jpg'],
+        'Standard Double': ['MCC/Standard Double/DOX_4540.jpg','MCC/Standard Double/MMM_4703.jpg','MCC/Standard Double/MCC009-6.jpg','MCC/Standard Double/DOX_4540.jpg','MCC/Standard Double/MMM_4703.jpg'],
+        'Double Twin': ['MCC/Double Twin/mcc-70.jpg','MCC/Double Twin/mh001-48.jpg','MCC/Double Twin/ML0-34.jpg','MCC/Double Twin/MMM_4648.jpg','MCC/Double Twin/mcc-33.jpg'],
+        'Executive': ['MCC/Executive/mcc001-17.jpg','MCC/Executive/IMG_7750.jpg','MCC/Executive/CVEH-2.jpg','MCC/Executive/mcc001-17.jpg','MCC/Executive/mcc001-7.jpg']
+      }
+    };
+
+    function getPlaceholderUrls(hotel, roomType) {
+      const hotelPlaceholders = HOTEL_PLACEHOLDERS[hotel] || HOTEL_PLACEHOLDERS['Mika Kabulonga'];
+      const ids = hotelPlaceholders[roomType] || hotelPlaceholders['Deluxe Room'];
+      return ids.map(id => `img/${id}?w=600&h=400&fit=crop`);
+    }
+
+    function buildRoomsForHotel(hotel) {
+      const hotelSlug = hotel.toLowerCase().replace(/ /g, '-');
+      const types = [
+        { type: 'Deluxe Room', priceBase: 189, amenities: ['Breakfast','WiFi','Smart TV','Minibar'] },
+        { type: 'Standard Single', priceBase: 320, amenities: ['Lounge','Espresso','Bathtub','WiFi'] },
+        { type: 'Standard Twin', priceBase: 150, amenities: ['WiFi','TV','Coffee maker'] },
+        { type: 'Standard Double', priceBase: 210, amenities: ['WiFi','Minibar','Bathtub'] },
+        { type: 'Double Twin', priceBase: 260, amenities: ['WiFi','TV','Fridge'] },
+        { type: 'Executive', priceBase: 380, amenities: ['Lounge','Espresso','Jacuzzi'] }
+        
+      ];
+      const priceMod = hotel === 'Chamba Valley' ? 30 : (hotel === 'Mika Lodge' ? -20 : (hotel === 'Convention Center' ? -40 : 0));
+      
+      return types.map((t, idx) => {
+        const roomTypeSlug = t.type.toLowerCase().replace(/ /g, '-');
+        const localImages = getLocalImages(hotelSlug, roomTypeSlug);
+        const placeholders = getPlaceholderUrls(hotel, t.type);
+        return {
+          id: `${hotelSlug}-${idx}`,
+          type: t.type,
+          price: Math.max(80, t.priceBase + priceMod),
+          shortDesc: `${t.type} - ${hotel}`,
+          fullDesc: `Experience Comfort & Quality ${t.type} at ${hotel}. ${t.amenities.slice(0,3).join(', ')} included.`,
+          amenities: t.amenities,
+          mainImage: localImages[0],
+          galleryImages: localImages,
+          placeholders: placeholders
+        };
+      });
+    }
+
+    const HOTELS = ['Mika Kabulonga', 'Chamba Valley', 'Mika Lodge', 'Convention Center'];
+    const HOTELS_ROOMS = {};
+    HOTELS.forEach(hotel => { HOTELS_ROOMS[hotel] = buildRoomsForHotel(hotel); });
+
+    let cart = [];
+    let currentNights = 0;
+    let stripe, elements, cardElement;
+    const stripePublicKey = 'pk_test_51QnZ9jP8s3YummyTestKeyAbc123';
+
+    // DOM elements
+    const hotelSelect = document.getElementById('hotelSelect');
+    const checkInInput = document.getElementById('checkIn');
+    const checkOutInput = document.getElementById('checkOut');
+    const searchBtn = document.getElementById('searchBtn');
+    const roomsContainer = document.getElementById('roomsContainer');
+    const cartItemsDiv = document.getElementById('cartItemsContainer');
+    const cartTotalSpan = document.getElementById('cartTotalAmount');
+    const proceedBtn = document.getElementById('proceedToPaymentBtn');
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    const dateError = document.getElementById('dateError');
+    const searchArea = document.getElementById('searchArea');
+    const paymentArea = document.getElementById('paymentArea');
+    const closePaymentBtn = document.getElementById('closePaymentBtn');
+    const payNowBtn = document.getElementById('payNowBtn');
+    const userFullName = document.getElementById('userFullName');
+    const userEmail = document.getElementById('userEmail');
+    const successMsgDiv = document.getElementById('paymentSuccessMsg');
+    const successUserDetails = document.getElementById('successUserDetails');
+    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+    const cardErrors = document.getElementById('cardErrors');
+    const modalOverlay = document.getElementById('roomModal');
+    const modalContent = document.getElementById('modalContent');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Default dates
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    checkInInput.value = today.toISOString().split('T')[0];
+    checkOutInput.value = tomorrow.toISOString().split('T')[0];
+    checkInInput.min = today.toISOString().split('T')[0];
+    checkOutInput.min = today.toISOString().split('T')[0];
+
+    function calculateNights() {
+      const cin = new Date(checkInInput.value);
+      const cout = new Date(checkOutInput.value);
+      if (!checkInInput.value || !checkOutInput.value) return 0;
+      return cout > cin ? Math.round((cout - cin) / (1000*60*60*24)) : 0;
+    }
+
+    function validateDates() {
+      const nights = calculateNights();
+      if (nights <= 0) { dateError.textContent = 'Check-out must be after check-in'; return false; }
+      else { dateError.textContent = ''; return true; }
+    }
+
+    function renderRooms() {
+      const hotel = hotelSelect.value;
+      const rooms = HOTELS_ROOMS[hotel] || [];
+      const nights = calculateNights();
+      currentNights = nights;
+      if (!validateDates()) { roomsContainer.innerHTML = `<p class="error-text">Invalid dates</p>`; return; }
+      if (nights === 0) return;
+      
+      let html = '';
+      rooms.forEach(room => {
+        const total = room.price * nights;
+        const mainImg = room.mainImage;
+        const thumbnails = room.galleryImages.slice(1, 5);
+        const placeholderMain = room.placeholders[0];
+        const placeholderThumbs = room.placeholders.slice(1,5);
+        html += `<div class="room-card" data-room-id="${room.id}" data-hotel="${hotel}">
+          <img class="room-main-img" src="${mainImg}" alt="${room.type}" onerror="this.src='${placeholderMain}'">
+          <div class="thumbnails-row">
+            ${thumbnails.map((img, i) => `<img src="${img}" alt="thumb" onerror="this.src='${placeholderThumbs[i] || placeholderMain}'">`).join('')}
+          </div>
+          <div class="room-card-content">
+            <h4>${room.type}</h4>
+            <div class="price">$${room.price}<span class="per-night">/night</span></div>
+            <div class="room-desc">${room.shortDesc}</div>
+            <div><span class="badge">${nights} nights: $${total}</span></div>
+            <button class="btn btn-outline add-to-cart-btn" data-room-id="${room.id}" data-type="${room.type}" data-price="${room.price}"><i class="fas fa-cart-plus"></i> Add to cart</button>
+          </div>
+        </div>`;
+      });
+      roomsContainer.innerHTML = html || '<p>No rooms</p>';
+      
+      document.querySelectorAll('.room-card').forEach(c => c.addEventListener('click', e => {
+        if (e.target.closest('.add-to-cart-btn')) return;
+        openModal(c.dataset.hotel, c.dataset.roomId);
+      }));
+      document.querySelectorAll('.add-to-cart-btn').forEach(b => b.addEventListener('click', e => {
+        e.stopPropagation();
+        addToCart(b.dataset.roomId, b.dataset.type, parseFloat(b.dataset.price));
+      }));
+    }
+
+    function openModal(hotel, roomId) {
+      const room = HOTELS_ROOMS[hotel]?.find(r => r.id === roomId);
+      if (!room) return;
+      const nights = currentNights;
+      const images = room.galleryImages;
+      const placeholders = room.placeholders;
+      modalContent.innerHTML = `
+        <h2>${room.type} at ${hotel}</h2>
+        <img id="modalMainImage" class="gallery-main" src="${images[0]}" onerror="this.src='${placeholders[0]}'">
+        <div class="thumbnail-row">${images.map((img,i)=>`<img class="thumbnail ${i===0?'active':''}" src="${img}" onerror="this.src='${placeholders[i] || placeholders[0]}'">`).join('')}</div>
+        <p>${room.fullDesc}</p>
+        <div class="price">$${room.price}<span class="per-night">/night</span></div>
+        <h3>Amenities</h3><div class="amenities-list">${room.amenities.map(a=>`<div class="amenity-item"><i class="fas fa-check-circle"></i> ${a}</div>`).join('')}</div>
+        <div class="modal-footer"><div><strong>${nights} nights: $${room.price*nights}</strong></div>
+        <button class="btn" id="modalAddToCartBtn"><i class="fas fa-cart-plus"></i> Add to cart</button></div>`;
+      document.querySelectorAll('.thumbnail').forEach(t => t.addEventListener('click', ()=>{
+        document.getElementById('modalMainImage').src = t.src;
+        document.querySelectorAll('.thumbnail').forEach(th=>th.classList.remove('active'));
+        t.classList.add('active');
+      }));
+      document.getElementById('modalAddToCartBtn').addEventListener('click', ()=>{
+        addToCart(room.id, room.type, room.price);
+        modalOverlay.classList.add('hidden');
+      });
+      modalOverlay.classList.remove('hidden');
+    }
+
+    function addToCart(roomId, roomType, pricePerNight) {
+      const nights = calculateNights();
+      if (nights <= 0) { alert('Set dates'); return; }
+      const hotel = hotelSelect.value;
+      const roomData = HOTELS_ROOMS[hotel]?.find(r => r.id === roomId);
+      if (!roomData) return;
+      
+      const existing = cart.find(item => item.hotel === hotel && item.roomId === roomId);
+      if (existing) {
+        existing.quantity += 1;
+        existing.totalItem = existing.pricePerNight * nights * existing.quantity;
+      } else {
+        cart.push({
+          hotel, roomId, roomType, pricePerNight, nights,
+          quantity: 1,
+          totalItem: pricePerNight * nights,
+          amenities: roomData.amenities || [],
+          image: roomData.mainImage,
+          placeholder: roomData.placeholders[0]
+        });
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">No rooms selected</p>';
+        cartTotalSpan.textContent = '$0';
+        proceedBtn.disabled = true;
+        return;
+      }
+      let itemsHtml = '', grandTotal = 0;
+      cart.forEach((item, idx) => {
+        grandTotal += item.totalItem;
+        const shortAmenities = item.amenities.slice(0,3).map(a => `<span><i class="fas fa-check"></i> ${a}</span>`).join('');
+        itemsHtml += `<div class="cart-item-detailed">
+          <div class="cart-item-header">
+            <img class="cart-thumbnail" src="${item.image}" alt="${item.roomType}" onerror="this.src='${item.placeholder}'">
+            <div class="cart-item-title">
+              <h4>${item.roomType}</h4>
+              <div class="hotel-name">${item.hotel}</div>
+            </div>
+          </div>
+          <div class="cart-amenities">${shortAmenities}</div>
+          <div class="cart-footer">
+            <div class="cart-price-info">$${item.pricePerNight} <small>/ night</small> · ${item.nights} nights</div>
+            <div class="qty-controls">
+              <button class="qty-btn decrease-qty" data-index="${idx}">−</button>
+              <span class="qty-num">${item.quantity}</span>
+              <button class="qty-btn increase-qty" data-index="${idx}">+</button>
+              <button class="remove-btn" data-index="${idx}"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+          <div style="text-align:right; margin-top:6px; font-weight:600;">Item total: $${item.totalItem}</div>
+        </div>`;
+      });
+      cartItemsDiv.innerHTML = itemsHtml;
+      cartTotalSpan.textContent = `$${grandTotal.toFixed(2)}`;
+      proceedBtn.disabled = false;
+
+      document.querySelectorAll('.decrease-qty').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = e.target.dataset.index;
+          if (cart[idx].quantity > 1) cart[idx].quantity--;
+          else cart.splice(idx, 1);
+          recalcCartTotals(); renderCart();
+        });
+      });
+      document.querySelectorAll('.increase-qty').forEach(btn => {
+        btn.addEventListener('click', e => {
+          cart[e.target.dataset.index].quantity++;
+          recalcCartTotals(); renderCart();
+        });
+      });
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = e.target.closest('.remove-btn').dataset.index;
+          cart.splice(idx, 1); renderCart();
+        });
+      });
+    }
+
+    function recalcCartTotals() {
+      const nights = calculateNights();
+      if (nights <= 0) return;
+      cart.forEach(item => {
+        item.nights = nights;
+        item.totalItem = item.pricePerNight * nights * item.quantity;
+      });
+    }
+
+    function clearCart() { cart = []; renderCart(); }
+
+    function showPayment() {
+      if (cart.length === 0) return;
+      searchArea.classList.add('hidden');
+      paymentArea.classList.remove('hidden');
+      if (!stripe) {
+        stripe = Stripe(stripePublicKey);
+        elements = stripe.elements();
+        cardElement = elements.create('card', { style: { base: { fontSize: '16px' } } });
+        cardElement.mount('#card-element');
+        cardElement.on('change', e => cardErrors.textContent = e.error?.message || '');
+      }
+    }
+
+    function hidePayment() {
+      searchArea.classList.remove('hidden');
+      paymentArea.classList.add('hidden');
+      successMsgDiv.classList.add('hidden');
+    }
+
+    function processPayment() {
+      const name = userFullName.value.trim(), email = userEmail.value.trim();
+      if (!name || !email) { alert('Enter name and email'); return; }
+      stripe.createToken(cardElement).then(r => {
+        if (r.error) cardErrors.textContent = r.error.message;
+        else {
+          const total = cart.reduce((s,i)=>s+i.totalItem,0);
+          successUserDetails.innerHTML = `<strong>${name}</strong> (${email})<br>Total: $${total.toFixed(2)}<br>Confirmation #LX${Math.floor(Math.random()*10000)}`;
+          successMsgDiv.classList.remove('hidden');
+          payNowBtn.disabled = true; userFullName.disabled = true; userEmail.disabled = true;
+          cardElement.update({ disabled: true });
+        }
+      }).catch(() => {
+        const total = cart.reduce((s,i)=>s+i.totalItem,0);
+        successUserDetails.innerHTML = `<strong>${name}</strong> (${email})<br>Total: $${total.toFixed(2)} (test)`;
+        successMsgDiv.classList.remove('hidden');
+        payNowBtn.disabled = true; userFullName.disabled = true; userEmail.disabled = true;
+        cardElement.update({ disabled: true });
+      });
+    }
+
+    function resetAfterSuccess() {
+      hidePayment(); clearCart();
+      userFullName.disabled = false; userEmail.disabled = false;
+      payNowBtn.disabled = false;
+      if (cardElement) cardElement.update({ disabled: false });
+      userFullName.value = ''; userEmail.value = '';
+    }
+
+    // Event listeners
+    searchBtn.addEventListener('click', ()=>{
+      if (validateDates()) { renderRooms(); if (cart.length) { recalcCartTotals(); renderCart(); } }
+    });
+    checkInInput.addEventListener('change', ()=>{
+      if (validateDates()) { renderRooms(); if (cart.length) { recalcCartTotals(); renderCart(); } }
+    });
+    checkOutInput.addEventListener('change', ()=>{
+      if (validateDates()) { renderRooms(); if (cart.length) { recalcCartTotals(); renderCart(); } }
+    });
+    hotelSelect.addEventListener('change', renderRooms);
+    clearCartBtn.addEventListener('click', clearCart);
+    proceedBtn.addEventListener('click', showPayment);
+    closePaymentBtn.addEventListener('click', hidePayment);
+    payNowBtn.addEventListener('click', (e)=>{ e.preventDefault(); processPayment(); });
+    closeSuccessBtn.addEventListener('click', resetAfterSuccess);
+    closeModalBtn.addEventListener('click', ()=> modalOverlay.classList.add('hidden'));
+    modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) modalOverlay.classList.add('hidden'); });
+
+    // Initial render
+    renderRooms();
+  })();
+</script>
+<!-- 
+  ✅ IMAGE SETUP – HOTEL‑SPECIFIC ROOM GALLERIES (5 IMAGES EACH)
+  - Local images should be placed in 'img/hotel-slug/room-type-slug-1.jpg' through '-5.jpg'
+  - Example: img/grand-plaza/deluxe-king-1.jpg
+  - Each hotel has its own unique placeholder image sets for every room type.
+  - If local images are missing, the hotel‑specific placeholders will appear.
+-->
+</body>
+</html>
